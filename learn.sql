@@ -234,30 +234,32 @@ CREATE TABLE order_details(
     
     
     -- JOINS ---
+    -- MERGING 2 OR MORE TABLES BY MERGING THEIR PK,FK RELATION , GIVES RESULTANT TABLE
+    
+    -- INNER JOIN --> AFTER MERGING GIVES ONLY MATCHED PART --> COMMON ENTRIES OF T1 AND T2
+    -- SYNTAX :- SELECT c.*,o.* FROM customer AS c INNER JOIN order_details AS o ON c.customer_id=o.cust_id;
     
     
+    -- empID is foreign key
+    -- Enlist all employee  ID's, name along with the project allocated to them
+     select * from employee as e INNER JOIN project as p ON e.id=p.empID; -- > gives : both tables merged data --> 
+     select e.id , e.fname,e.lname,p.id,p.name from employee as e INNER JOIN project as p ON e.id=p.empID; -- > gives only mentioned data merged from both table
+     
+     -- Fetch out all emp id's and their contact details who have been working from jaipur with the client name working in hyderabad
+     select e.id , e.PhoneNo,e.emailID,c.fname,c.lname from employee as e INNER JOIN client as c ON e.id=c.empID WHERE e.city='jaipur' & c.city='hyderabad';
     
+    -- OUTER JOIN --> LEFT JOIN --> ALL DATA OF T1 AND COMMON  DATA WITH T2, CORRESPONDING TO NON-COMMON DATA OF T1 , NULL WILL BE SET FOR T2 ENTRIES/DATA
+                     -- > SELECT c.*,o.* FROM customer AS c LEFT JOIN order_details AS o ON c.customer_id=o.cust_id;
+                     
+				-- > RIGHT JOIN --> ALL DATA OF T2 AND COMMON  DATA WITH T1, CORRESPONDING TO NON-COMMON DATA OF T2 , NULL WILL BE SET FOR T1 ENTRIES/DATA
+                -- > SELECT c.*,o.* FROM customer AS c RIGHT JOIN order_details AS o ON c.customer_id=o.cust_id;
+                
+                -- > FULL JOIN --> UNION OF LEFT JOIN AND RIGHT JOIN --> NO RSERVED KEYWORD AS FULL JOIN --> PERFORM 'UNION' OF LEFT JOIN AND RIGHT JOIN TO ACHIEVE FULL JOIN
+                -- > SELECT c.*,o.* FROM customer AS c LEFT JOIN order_details AS o ON c.customer_id=o.cust_id 
+                --   UNION 
+                --   SELECT c.*,o.* FROM customer AS c RIGHT JOIN order_details AS o ON c.customer_id=o.cust_id;
+                
+	-- CROSS / CARTESIAN JOIN --> GIVES ALL POSSIBLE MATCHES --> NOT IMP
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
+    -- SELF JOIN
+    -- >syntax:- SELECT e1.id , e2.id,e2.name from employee as e1 INNER JOIN employee as e2 ON e1.id=e2.id;
