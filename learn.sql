@@ -72,7 +72,7 @@ INSERT INTO Title (WORKER_REF_ID,WORKER_TITLE,AFFECTED_FROM) VALUES
     SELECT SALARY FROM Worker;
     SELECT FIRST_NAME , SALARY FROM Worker;
     SELECT 11+22;
-    SELECT NOW();
+    SELECT NOW(); -- >current datetime
     SELECT LCASE("PARAS");
     SELECT UCASE("paras");
     
@@ -244,15 +244,26 @@ CREATE TABLE order_details(
     -- Enlist all employee  ID's, name along with the project allocated to them
      select * from employee as e INNER JOIN project as p ON e.id=p.empID; -- > gives : both tables merged data --> 
      select e.id , e.fname,e.lname,p.id,p.name from employee as e INNER JOIN project as p ON e.id=p.empID; -- > gives only mentioned data merged from both table
+     select e.id , e.fname,e.lname,p.id,p.name from employee as e , project as p WHERE e.id=p.empID; -- diff syntax same output , without inner join
+     
      
      -- Fetch out all emp id's and their contact details who have been working from jaipur with the client name working in hyderabad
      select e.id , e.PhoneNo,e.emailID,c.fname,c.lname from employee as e INNER JOIN client as c ON e.id=c.empID WHERE e.city='jaipur' & c.city='hyderabad';
+     
+     
     
     -- OUTER JOIN --> LEFT JOIN --> ALL DATA OF T1 AND COMMON  DATA WITH T2, CORRESPONDING TO NON-COMMON DATA OF T1 , NULL WILL BE SET FOR T2 ENTRIES/DATA
                      -- > SELECT c.*,o.* FROM customer AS c LEFT JOIN order_details AS o ON c.customer_id=o.cust_id;
                      
+                     -- fetch out each project allocated to each employee
+                     select*from employee as e LEFT JOIN Project as p ON e.id=p.empID;
+                     
+                     
 				-- > RIGHT JOIN --> ALL DATA OF T2 AND COMMON  DATA WITH T1, CORRESPONDING TO NON-COMMON DATA OF T2 , NULL WILL BE SET FOR T1 ENTRIES/DATA
                 -- > SELECT c.*,o.* FROM customer AS c RIGHT JOIN order_details AS o ON c.customer_id=o.cust_id;
+                
+                -- list out all projects along with the employee's name  and their rescpective email id
+                select p.id,p.name,e.fname,e.lname,e.emailID from employee as e RIGHT JOIN project as p ON e.id=p.empID;
                 
                 -- > FULL JOIN --> UNION OF LEFT JOIN AND RIGHT JOIN --> NO RSERVED KEYWORD AS FULL JOIN --> PERFORM 'UNION' OF LEFT JOIN AND RIGHT JOIN TO ACHIEVE FULL JOIN
                 -- > SELECT c.*,o.* FROM customer AS c LEFT JOIN order_details AS o ON c.customer_id=o.cust_id 
@@ -263,3 +274,79 @@ CREATE TABLE order_details(
     
     -- SELF JOIN
     -- >syntax:- SELECT e1.id , e2.id,e2.name from employee as e1 INNER JOIN employee as e2 ON e1.id=e2.id;
+    
+    -- SET OPERATIONS
+    -- combine rows / combine select statements / cols need to be same
+     -- JOIN VS UNION
+     -- join --> cols increases --> combine horizontally
+     -- union --> rows increses ( jinka union kar rhe he unke cols ka data type same hona chahiye also number of entries b same) --> combine vertically
+     select * from t1 UNION select * from t2;
+     
+     
+     -- INTERSECT 
+     select DISTINCT id from t1 INNER JOIN t2 using(id);
+     select DISTINCT id from t1 INNER JOIN t2 ON t1.id=t2.id; -- same
+     
+     -- MINUS
+     select id from t1  LEFT JOIN t2 using (id) WHERE t2.id is NULL; 
+     
+     -- SET OPERATIONS
+     -- list out all the employees in company
+     select * from dept1 
+     UNION 
+     select * from dept2;
+     
+     -- list out all the employees who works a salesman
+     select * from dept1 WHERE role='salesman'
+     UNION 
+     select * from dept2 WHERE role='salesman';
+     
+     -- list out all emp who works for both department 
+     select dept1.* from dept1 INNER JOIN dept2 USING(id);
+     
+     -- list out all emp who works in department 1 but not in department 2
+     select dept1.* from dept1 LEFT JOIN dept2 USING(empid)
+     WHERE dept2.empid is NULL;
+     
+     -- SUB QUERIES -- NESTED QUERY
+     
+     -- emp with age>30
+     select * from employee where age in (select age from employee where age>30);
+     
+      -- emp working in more than 1 project
+      select * from employee where id in(
+      select empId from project group by empID having count(empId)>1
+      );
+      
+      -- emp having age > avg(age)
+      select * from employee where age>(select avg(age) from employee); 
+      
+      -- select max age person whose first name contains 'a'
+      select max(age) from (select * from employee where fname like '%a%' ) as temp; -- > last wala part is madnatory -- > derived wala kuch  scene he
+      
+      -- corelated subquery
+      -- find 3rd oldest employee
+      SELECT *
+      FROM employee e1
+      WHERE 3=(
+      SELECT COUNT(e2.age)
+      FROM employee e2
+      WHERE e2.age >= e1.age
+      );
+      
+      -- VIEWS
+      select * from worker;
+      
+      -- creating view
+      CREATE VIEW custom_view AS select FIRST_NAME , LAST_NAME FROM worker;
+      
+      -- viewing from view
+      select * from custom_view;
+      
+      -- ALTERING VIEW
+      ALTER VIEW custom_view AS SELECT salary,FIRST_NAME from worker;
+      
+      -- DROPING THE VIEW
+      DROP VIEW IF EXISTS custom_view;
+      
+      
